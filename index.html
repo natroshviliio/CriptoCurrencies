@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="header">
+        <div class="header-logo">
+            <p><span>C</span>RIPTO<span>C</span>URRENCIES</p>
+        </div>
+        <div class="auth-form">
+            <form>
+                <input type="text" placeholder="username">
+                <input type="password" placeholder="password">
+                <button id="logn">Login</button>
+                <button id="reg" class="b-color-torquoise">Register</button>
+            </form>
+        </div>
+        <div class="auth-form-mob">
+            <form>
+                <button id="logn-mob">Login</button>
+                <button id="reg-mob" class="torquoise">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container">
+        <section class="section">
+            <div class="top-currencies">
+                <div class="section-description">
+                    <h1>TOP CURRENCIES</h1>
+                </div>
+                <div id="cb" class="currency-board">
+                </div>
+                <p class="arrow prev"><span>&#x3c;</span></p>
+                <p class="arrow next"><span>&#x3e;</span></p>
+            </div>
+
+            <div class="converter">
+                <div class="section-description">
+                    <h1>CONVERTER</h1>
+                </div>
+                <div class="converter-board"></div>
+            </div>
+        </section>
+    </div>
+    <script src="index.js"></script>
+</body>
+
+</html>
