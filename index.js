@@ -1,5 +1,12 @@
 const url = 'https://api.coingecko.com/api/v3/coins/';
 let dataArr = [];
+let converterCurrency = {
+	coinName: '',
+	coinSymbol: '',
+	coinValue: 0,
+	currSymbol: '',
+	currValue: 0,
+};
 
 const currencyBoard = document.querySelector('.currency-board');
 const cb = document.getElementById('cb');
@@ -31,6 +38,15 @@ const nextBtn = document.querySelector('.next');
 			),
 		);
 	});
+	const temp = dataArr.filter((d) => d.market_data.market_cap_rank === 1)[0];
+	converterCurrency = {
+		coinName: temp.name,
+		coinSymbol: temp.symbol.toUpperCase(),
+		coinValue: 1 / temp.market_data.current_price.usd,
+		currSymbol: 'USD',
+		currValue: temp.market_data.current_price.usd,
+	};
+	addConverter(converterCurrency);
 })();
 
 const loginButton = document.getElementById('logn');
@@ -124,4 +140,6 @@ function addTopCurrencies(name, abr, curUS, curEUR, iconUrl, min, max, count) {
 	return topcurr;
 }
 
-function addConverter() {}
+function addConverter({ coinName, coinSymbol, coinValue, currSymbol, currValue }) {
+	console.log(coinName, coinSymbol, coinValue, currSymbol, currValue);
+}
