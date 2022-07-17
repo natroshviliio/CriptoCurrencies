@@ -25,16 +25,17 @@
         <div class="auth-form-mob">
             <form>
                 <button id="logn-mob">Login</button>
-                <button id="reg-mob" class="torquoise">Register</button>
+                <button id="reg-mob" class="b-color-torquoise">Register</button>
             </form>
         </div>
     </div>
 
     <div class="container">
         <section class="section">
-            <div class="top-currencies">
+
+            <div class="top-currencies block">
                 <div class="section-description">
-                    <h1>TOP CURRENCIES</h1>
+                    <h1>POPULAR CURRENCIES</h1>
                 </div>
                 <div id="cb" class="currency-board">
                 </div>
@@ -46,7 +47,24 @@
                 <div class="section-description">
                     <h1>CONVERTER</h1>
                 </div>
-                <div class="converter-board"></div>
+                <div class="converter-board">
+                    <div class="converter-header">
+                        <h3>1 BTC = 20239 USD</h3>
+                    </div>
+                    <div class="converter-header">
+                        <h3>1 USD = 0.00004715 BTC</h3>
+                    </div>
+                    <div class="converter-body">
+                        <div class="input-group">
+                            <label id="convcoin" for="inputcoin">BTC</label>
+                            <input id="inputcoin" type="number">
+                        </div>
+                        <div class="input-group">
+                            <label id="convcur" for="inputcur">USD</label>
+                            <input id="inputcur" type="number">
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </div>

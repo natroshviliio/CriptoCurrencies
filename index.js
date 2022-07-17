@@ -6,8 +6,8 @@ const cb = document.getElementById('cb');
 const prevBtn = document.querySelector('.prev');
 const nextBtn = document.querySelector('.next');
 (async () => {
-	let promise = await fetch(url);
-	let data = await promise.json();
+	let response = await fetch(url);
+	let data = await response.json();
 	for (let d of data) {
 		dataArr.push(d);
 	}
@@ -37,7 +37,6 @@ const loginButton = document.getElementById('logn');
 
 loginButton.onclick = (e) => {
 	e.preventDefault();
-	console.log(dataArr[0]);
 };
 const loginButtonMob = document.getElementById('logn-mob');
 
@@ -47,14 +46,14 @@ loginButtonMob.onclick = (e) => {
 
 cb.addEventListener('mousemove', (e) => {
 	if (document.body.clientWidth > 1000) {
-		if (e.target.className === 'currency-board' && e.offsetX > 0 && e.offsetX < 15) {
+		if (e.target.className === 'currency-board' && e.offsetX > -11 && e.offsetX < 0) {
 			prevBtn.classList.add('d-block');
 		}
 		prevBtn.addEventListener('mouseleave', () => {
 			prevBtn.classList.remove('d-block');
 		});
 		const cbw = parseInt(window.getComputedStyle(cb).getPropertyValue('width'));
-		if (e.target.className === 'currency-board' && e.offsetX > cbw - 15 && e.offsetX < cbw) {
+		if (e.target.className === 'currency-board' && e.offsetX > cbw - 25 && e.offsetX < cbw) {
 			nextBtn.classList.add('d-block');
 		}
 		nextBtn.addEventListener('mouseleave', () => {
@@ -110,3 +109,5 @@ function addTopCurrencies(name, abr, curUS, curEUR, iconUrl, min, max, count) {
 
 	return topcurr;
 }
+
+function addConverter() {}
