@@ -78,6 +78,20 @@ cb.addEventListener('mousemove', (e) => {
 	}
 });
 
+const inputCoin = document.getElementById('inputcoin');
+const inputCur = document.getElementById('inputcur');
+
+//CONVERTER
+inputCoin.addEventListener('keyup', () => {
+	const currPrice = dataArr.find((d) => d.id === 'bitcoin').market_data.current_price.usd;
+	inputCur.value = (inputCoin.value * currPrice).toFixed(3);
+});
+
+inputCur.addEventListener('keyup', () => {
+	const currPrice = dataArr.find((d) => d.id === 'bitcoin').market_data.current_price.usd;
+	inputCoin.value = (inputCur.value * (1 / currPrice)).toFixed(6);
+});
+
 function addTopCurrencies(name, abr, curUS, curEUR, iconUrl, min, max, count) {
 	const topcurr = `
 		<div class="topcur">
