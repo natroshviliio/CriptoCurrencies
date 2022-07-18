@@ -12,20 +12,20 @@
     --light-red: rgb(212, 59, 67);
 }
 
-.b-color-torquoise {
+.bg-torquoise {
     background-color: var(--light-torquoise) !important;
 }
 
-.b-color-yellow {
+.bg-yellow {
     background-color: var(--yellow) !important;
 }
 
-.b-color-lgreen {
+.bg-lgreen {
     background-color: var(--light-green) !important;
 }
 
-.b-color-lred {
-    background-color: var(--light-red);
+.bg-lred {
+    background-color: var(--light-red) !important;
 }
 
 *, ::before, ::after {
@@ -44,7 +44,7 @@ body {
 
 a, li, span, p, label, h1, h2, h3, h4, h5, h6 {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
-    /* color: #212121; */
+    /* color: #242424; */
 }
 
 a {
@@ -163,13 +163,21 @@ a {
     width: 100%;
     padding-left: 20px;
     margin-top: 40px;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
     letter-spacing: 1px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     align-items: center;
     user-select: none;
     text-align: center;
+}
+
+.section-description h1 {
+    padding: 5px 20px;
+    border-radius: 10px 10px 0 0;
+    background-color: white;
+    box-shadow: 3px 3px 7px rgb(177, 177, 177);
+    color: #444;
 }
 
 .top-currencies {
@@ -194,7 +202,7 @@ a {
 }
 
 .currency-board, .converter-board {
-    box-shadow: 3px 3px 10px rgb(177, 177, 177);
+    box-shadow: 5px 5px 5px rgb(211, 211, 211);
 }
 
 .currency-board::-webkit-scrollbar {
@@ -351,24 +359,23 @@ a {
     flex-direction: column;
 }
 
-.p-change p {
+.p-change p, .p-change span {
     font-family: 'Dosis', sans-serif;
     font-size: 1rem;
     font-weight: 700;
+    letter-spacing: 1px;
 }
 
 .progress {
-    color: var(--light-green);
+    color: var(--light-green) !important;
+}
+
+.zero {
+    color: var(--light-torquoise) !important;
 }
 
 .degress {
-    color: var(--light-red);
-}
-
-.topcur-body span {
-    font-family: 'Dosis', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
+    color: var(--light-red) !important;
 }
 
 .topcur-foot {
@@ -386,8 +393,6 @@ a {
     flex-direction: column;
     margin-right: 10px;
 }
-
-
 
 .topcur-foot-inf p {
     font-size: .9rem;
@@ -478,16 +483,21 @@ a {
 
 .converter-body {
     width: 100%;
-    height: 40px;
     margin-top: 20px;
     display: grid;
     grid-template-columns: auto auto;
     gap: 10px;
 }
 
+.group-collection {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative
+}
+
 .input-group {
     width: 100%;
-    height: 100%;
     background-color: white;
     border-radius: 5px;
     display: flex;
@@ -497,7 +507,7 @@ a {
 
 .input-group input[type='number'] {
     width: 70%;
-    height: 100%;
+    height: 40px;
     border: none;
     border-radius: 0 5px 5px 0;
     background-color: white;
@@ -519,6 +529,25 @@ a {
     font-family: 'Dosis', sans-serif;
     font-weight: 800;
     color: #555;
+}
+
+.input-group span {
+    font-size: 12px;
+}
+
+.item-list {
+    width: 100%;
+    position: relative;
+    bottom: 0;
+    left: 0;
+}
+
+.item-list input {
+    width: 100%;
+}
+
+.item-list ul li {
+    list-style-type: none;
 }
 
 input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
@@ -580,5 +609,9 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 
     .converter-header h3 {
         font-size: .9rem;
+    }
+
+    .currency-board {
+        border-radius: 0 0 15px 15px;
     }
 }
