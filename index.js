@@ -170,6 +170,19 @@ setInterval(() => {
 	fetchData();
 }, 1000);
 
+const selectCoin = document.getElementById('select-coin');
+const selectCurr = document.getElementById('select-curr');
+const coinlist = document.querySelector('.coinlist');
+const currlist = document.querySelector('.currlist');
+
+selectCoin.addEventListener('click', () => {
+	coinlist.classList.toggle('d-flex');
+});
+
+selectCurr.addEventListener('click', () => {
+	currlist.classList.toggle('d-flex');
+});
+
 //JSX
 function addTopCurrencies(name, abr, curUS, pcp_24h, pc_24h, iconUrl, min, max, count) {
 	let priceChangeP = pcp_24h > 0 ? `+${pcp_24h}` : pcp_24h;

@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Koulen&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200;300;400;500&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap');
 
 /*RESET*/
 :root {
@@ -250,6 +251,14 @@ a {
     display: block !important;
 }
 
+.d-none {
+    display: none !important;
+}
+
+.d-flex {
+    display: flex !important;
+}
+
 /* BOX OF EACH CURRENCY */
 .topcur {
     width: 100%;
@@ -493,7 +502,7 @@ a {
     width: 100%;
     display: flex;
     flex-direction: column;
-    position: relative
+    position: relative;
 }
 
 .input-group {
@@ -537,17 +546,50 @@ a {
 
 .item-list {
     width: 100%;
-    position: relative;
-    bottom: 0;
+    max-height: 200px;
+    padding: 10px 7px 10px 7px;
+    position: absolute;
+    display: none;
+    border-radius: 5px;
+    flex-direction: column;
+    top: 45px;
     left: 0;
+    overflow: scroll;
+    background-color: white;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.item-list::-webkit-scrollbar {
+    display: none;
 }
 
 .item-list input {
     width: 100%;
+    border: 1px solid #ddd;
+    height: 25px;
+    padding: 5px;
+    border-radius: 3px;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: 'Poppins', sans-serif;
 }
 
 .item-list ul li {
     list-style-type: none;
+    padding: 5px 5px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: normal;
+    border-radius: 5px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.item-list ul li:hover {
+    background-color: #f8f8f8;
 }
 
 input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
