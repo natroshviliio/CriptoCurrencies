@@ -1,9 +1,16 @@
 let dataApi = {
-	url: 'https://api.coingecko.com/api/v3/coins/markets',
-	currency: 'usd',
-	page: 1,
-	get: function (url = this.url, currency = this.currency, page = this.page) {
-		return `${url}?vs_currency=${currency}&page=${page}&price_change_percentage=1h`;
+	params: {
+		url: 'https://api.coingecko.com/api/v3/coins/markets',
+		currency: 'usd',
+		page: 1,
+	},
+	get: function (
+		url = this.params.url,
+		currency = this.params.currency,
+		page = this.params.page,
+		additional = '',
+	) {
+		return `${url}?vs_currency=${currency}&page=${page}&${additional}`;
 	},
 };
 
@@ -27,7 +34,9 @@ const prevBtn = document.querySelector('.prev');
 const nextBtn = document.querySelector('.next');
 
 (async () => {
-	let response = await fetch(dataApi.get());
+	let response = await fetch(
+		dataApi.get(dataApi.params.url, dataApi.params.currency, dataApi.params.page, 'sparkline=true'),
+	);
 	let data = await response.json();
 	for (let d of data) {
 		d.market_cap_rank <= 10 ? topCurrencies.push(d) : '';
@@ -160,15 +169,6 @@ inputCur.addEventListener('keyup', (e) => {
 
 	inputCoin.value = (inputCur.value * (1 / currPrice)).toFixed(6);
 });
-
-setInterval(() => {
-	const fetchData = async () => {
-		const response = await fetch(dataApi.get(dataApi.url, dataApi.currency, 1));
-		const data = await response.json();
-		console.log(data[0].price_change_percentage_1h_in_currency);
-	};
-	fetchData();
-}, 1000);
 
 const selectCoin = document.getElementById('select-coin');
 const selectCurr = document.getElementById('select-curr');
