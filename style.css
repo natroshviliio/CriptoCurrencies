@@ -460,7 +460,6 @@ a {
 .converter-icon {
     width: 25px;
     height: 25px;
-    background-image: url('./cryptoIcons/Bitcoin.svg');
     background-repeat: no-repeat;
     background-size: contain;
     position: absolute;
