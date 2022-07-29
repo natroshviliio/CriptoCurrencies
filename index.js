@@ -3,17 +3,20 @@ let dataApi = {
 		url: 'https://api.coingecko.com/api/v3/coins/markets',
 		currency: 'usd',
 		page: 1,
+		ids: '',
 	},
 	get: function (
 		url = this.params.url,
 		currency = this.params.currency,
 		page = this.params.page,
-		additional = '',
+		ids = this.params.ids,
+		sparkline = '',
 	) {
-		return `${url}?vs_currency=${currency}&page=${page}&${additional}`;
+		return `${url}?vs_currency=${currency}&ids=${ids}&order=market_cap_desc&page=${page}&${sparkline}`;
 	},
 };
 
+// CONVERTING
 let converterCurrentCurrency = {
 	coinName: '',
 	coinSymbol: '',
@@ -21,13 +24,16 @@ let converterCurrentCurrency = {
 	currSymbol: '',
 	currValue: 0,
 	coinIco: '',
+	coinInputValue: 0.0,
+	currencyInputValue: 0.0,
 };
 
-let topCurrencies = [];
-
 let currencies = ['USD', 'AUD', 'EUR', 'CAD'];
-let converterTop10 = [];
 let converterSearchCur = [];
+let converterTop10 = [];
+let searchResult = [];
+// OTHER
+let topCurrencies = [];
 
 const currencyBoard = document.querySelector('.currency-board');
 const converterBoard = document.querySelector('.converter-board');
@@ -35,15 +41,103 @@ const cb = document.getElementById('cb');
 const prevBtn = document.querySelector('.prev');
 const nextBtn = document.querySelector('.next');
 
-(async () => {
-	let response = await fetch(
-		dataApi.get(dataApi.params.url, dataApi.params.currency, dataApi.params.page, 'sparkline=true'),
-	);
-	let data = await response.json();
-	for (let d of data) {
-		d.market_cap_rank <= 10 ? topCurrencies.push(d) : '';
+//DATA FETCH
+class fetchData {
+	constructor(dataApi) {
+		this.dataApi = dataApi;
 	}
-	converterTop10 = topCurrencies;
+
+	async fetchTopCurrencies() {
+		let response = await fetch(
+			this.dataApi.get(
+				dataApi.params.url,
+				dataApi.params.currency,
+				dataApi.params.page,
+				dataApi.params.ids,
+				'sparkline=true',
+			),
+		);
+
+		let data = await response.json();
+		for (let d of data) {
+			d.market_cap_rank <= 10 ? topCurrencies.push(d) : '';
+		}
+	}
+
+	async fetchCurrencyFromCurrencieName() {
+		let response = await fetch(
+			this.dataApi.get(
+				dataApi.params.url,
+				dataApi.params.currency,
+				dataApi.params.page,
+				dataApi.params.ids,
+				'sparkline=true',
+			),
+		);
+
+		const data = await response.json();
+		const temp = data.find((x) => x.name === converterCurrentCurrency.coinName);
+
+		converterCurrentCurrency = {
+			coinName: temp.name,
+			coinSymbol: temp.symbol.toUpperCase(),
+			coinValue: 1 / temp.current_price,
+			currSymbol: this.dataApi.params.currency.toUpperCase(),
+			currValue: temp.current_price,
+			coinIco: temp.image,
+			sparkline: temp.sparkline_in_7d.price,
+			coinInputValue: converterCurrentCurrency.coinInputValue,
+			currencyInputValue: converterCurrentCurrency.coinInputValue * temp.current_price,
+		};
+	}
+
+	async fetchCurrencyFromCoinName() {
+		let response = await fetch(
+			this.dataApi.get(
+				dataApi.params.url,
+				dataApi.params.currency,
+				dataApi.params.page,
+				dataApi.params.ids,
+				'sparkline=true',
+			),
+		);
+
+		const data = await response.json();
+		const temp = data.find((x) => x.id === this.dataApi.params.ids);
+
+		converterCurrentCurrency = {
+			coinName: temp.name,
+			coinSymbol: temp.symbol.toUpperCase(),
+			coinValue: 1 / temp.current_price,
+			currSymbol: this.dataApi.params.currency.toUpperCase(),
+			currValue: temp.current_price,
+			coinIco: temp.image,
+			sparkline: temp.sparkline_in_7d.price,
+			coinInputValue: converterCurrentCurrency.coinInputValue,
+			currencyInputValue: converterCurrentCurrency.coinInputValue * temp.current_price,
+		};
+	}
+}
+
+async function searchCoin(name) {
+	let response;
+	let data;
+	if (name.length > 2) {
+		response = await fetch(`https://api.coingecko.com/api/v3/search?query=${name}`);
+		data = await response.json();
+	}
+	if (data?.coins.length > 0) {
+		for (d of data.coins) {
+			searchResult.push(d);
+		}
+	} else {
+		searchResult = converterTop10;
+	}
+}
+
+(async () => {
+	const f = new fetchData(dataApi);
+	await f.fetchTopCurrencies();
 	topCurrencies.map((d) => {
 		const {
 			name,
@@ -71,6 +165,9 @@ const nextBtn = document.querySelector('.next');
 			),
 		);
 	});
+
+	converterTop10 = topCurrencies;
+	searchResult = converterTop10;
 	const temp = converterTop10.filter((d) => d.market_cap_rank === 1)[0];
 
 	converterCurrentCurrency = {
@@ -84,65 +181,70 @@ const nextBtn = document.querySelector('.next');
 	};
 
 	converterBoard.insertAdjacentHTML('afterbegin', addConverter(converterCurrentCurrency));
-	(() => {
-		const inputCoin = document.getElementById('inputcoin');
-		const inputCur = document.getElementById('inputcur');
-		inputCoin.min = 0;
-		inputCur.min = 0;
-
-		//CONVERTER
-		inputCoin.addEventListener('keydown', (e) => {
-			if (e.key === '-' || e.key === '+' || e.key === 'e' || e.key === 'E') {
-				e.preventDefault();
-			}
-		});
-		inputCur.addEventListener('keydown', (e) => {
-			if (e.key === '-' || e.key === '+' || e.key === 'e') {
-				e.preventDefault();
-			}
-		});
-		inputCoin.addEventListener('keyup', (e) => {
-			//#region THIS IS A RESTRICTION FOR MOBILE DEVICES BUT NEED TO FIX SOMETHING GETTING WRONG
-			// inputCoin.value === '' && e.key === 'Backspace'
-			// 	? (inputCoinValue = '')
-			// 	: inputCoin.value !== ''
-			// 	? (inputCoinValue = inputCoin.value)
-			// 	: inputCoin.value;
-
-			// inputCoin.value = inputCoinValue;
-			//#endregion
-
-			inputCur.value = (inputCoin.value * converterCurrentCurrency.currValue).toFixed(3);
-		});
-
-		inputCur.addEventListener('keyup', (e) => {
-			//#region THIS IS A RESTRICTION FOR MOBILE DEVICES BUT NEED TO FIX SOMETHING GETTING WRONG
-			// inputCur.value === '' && e.key === 'Backspace'
-			// 	? (inputCurValue = '')
-			// 	: inputCur.value !== ''
-			// 	? (inputCurValue = inputCur.value)
-			// 	: '';
-
-			// inputCur.value = inputCurValue;
-			//#endregion
-
-			inputCoin.value = (inputCur.value * converterCurrentCurrency.coinValue).toFixed(8);
-		});
-
-		const selectCoin = document.getElementById('select-coin');
-		const selectCurr = document.getElementById('select-curr');
-		const coinlist = document.querySelector('.coinlist');
-		const currlist = document.querySelector('.currlist');
-
-		selectCoin.addEventListener('click', () => {
-			coinlist.classList.toggle('d-flex');
-		});
-
-		selectCurr.addEventListener('click', () => {
-			currlist.classList.toggle('d-flex');
-		});
-	})();
+	currencyFunc();
 })();
+
+let inputCoin;
+let inputCur;
+
+function currencyFunc() {
+	inputCoin = document.getElementById('inputcoin');
+	inputCur = document.getElementById('inputcur');
+	inputCoin.min = 0;
+	inputCur.min = 0;
+
+	//CONVERTER
+	inputCoin.addEventListener('keydown', (e) => {
+		if (e.key === '-' || e.key === '+' || e.key === 'e' || e.key === 'E') {
+			e.preventDefault();
+		}
+	});
+	inputCur.addEventListener('keydown', (e) => {
+		if (e.key === '-' || e.key === '+' || e.key === 'e') {
+			e.preventDefault();
+		}
+	});
+	inputCoin.addEventListener('keyup', (e) => {
+		//#region THIS IS A RESTRICTION FOR MOBILE DEVICES BUT NEED TO FIX SOMETHING GETTING WRONG
+		// inputCoin.value === '' && e.key === 'Backspace'
+		// 	? (inputCoinValue = '')
+		// 	: inputCoin.value !== ''
+		// 	? (inputCoinValue = inputCoin.value)
+		// 	: inputCoin.value;
+
+		// inputCoin.value = inputCoinValue;
+		//#endregion
+
+		inputCur.value = (inputCoin.value * converterCurrentCurrency.currValue).toFixed(3);
+	});
+
+	inputCur.addEventListener('keyup', (e) => {
+		//#region THIS IS A RESTRICTION FOR MOBILE DEVICES BUT NEED TO FIX SOMETHING GETTING WRONG
+		// inputCur.value === '' && e.key === 'Backspace'
+		// 	? (inputCurValue = '')
+		// 	: inputCur.value !== ''
+		// 	? (inputCurValue = inputCur.value)
+		// 	: '';
+
+		// inputCur.value = inputCurValue;
+		//#endregion
+
+		inputCoin.value = (inputCur.value * converterCurrentCurrency.coinValue).toFixed(8);
+	});
+
+	const selectCoin = document.getElementById('select-coin');
+	const selectCurr = document.getElementById('select-curr');
+	const coinlist = document.querySelector('.coinlist');
+	const currlist = document.querySelector('.currlist');
+
+	selectCoin.addEventListener('click', () => {
+		coinlist.classList.toggle('d-flex');
+	});
+
+	selectCurr.addEventListener('click', () => {
+		currlist.classList.toggle('d-flex');
+	});
+}
 
 const loginButton = document.getElementById('logn');
 
@@ -245,9 +347,21 @@ function addTopCurrencies(name, abr, curUS, pcp_24h, pc_24h, iconUrl, min, max, 
 	return topcurr;
 }
 
-function addConverter({ coinName, coinSymbol, coinValue, currSymbol, currValue, coinIco, sparkline }) {
+function addConverter(convCurrency) {
+	const {
+		coinName,
+		coinSymbol,
+		coinValue,
+		currSymbol,
+		currValue,
+		coinIco,
+		sparkline,
+		coinInputValue,
+		currencyInputValue,
+	} = convCurrency;
 	const converter = `
-				<div class="converter-icon" style="background-image: url('${coinIco}')"></div>
+				<div id='inner-conv'>
+					<div class="converter-icon" style="background-image: url('${coinIco}')"></div>
                     <div class="converter-header">
                         <h3>1 ${coinSymbol} = ${currValue} ${currSymbol}</h3>
                     </div>
@@ -257,37 +371,94 @@ function addConverter({ coinName, coinSymbol, coinValue, currSymbol, currValue, 
                     <div class="converter-body">
                         <div class="group-collection">
                             <div class="input-group">
-                                <label id="select-coin" for="">BTC<span>▼</span></label>
-                                <input id="inputcoin" type="number">
+                                <label id="select-coin" for="">${coinSymbol}<span>▼</span></label>
+                                <input id="inputcoin" type="number" value=${coinInputValue}>
                             </div>
                             <div class="item-list coinlist">
-                                <input type="text" placeholder="Search coin">
+                                <input id='coinsearch' type="text" placeholder="Search coin">
                                 <ul>
-                                    <li>Bitcoin - BTC</li>
-                                    <li>Bitcoin - BTC</li>
-                                    <li>Bitcoin - BTC</li>
-                                    <li>Bitcoin - BTC</li>
-                                    <li>Bitcoin - BTC</li>
-                                    <li>Bitcoin - BTC</li>
+                                    ${searchResult
+																			.map((coin) => {
+																				return `<li data-coinnm='${coin.id}' id='coinlst'>${
+																					coin.name.length > 8 ? coin.name.substring(0, 8) + '...' : coin.name
+																				}  <span>${coin.symbol.toUpperCase()}</span></li>`;
+																			})
+																			.join('')}
                                 </ul>
                             </div>
                         </div>
                         <div class="group-collection">
                             <div class="input-group">
-                                <label id="select-curr" for="">USD<span>▼</span></label>
-                                <input id="inputcur" type="number">
+                                <label id="select-curr" for="">${currSymbol}<span>▼</span></label>
+                                <input id="inputcur" type="number" value=${currencyInputValue}>
                             </div>
                             <div class="item-list text-center currlist">
                                 <ul>
-                                    <li>USD</li>
-                                    <li>USD</li>
-                                    <li>USD</li>
-                                    <li>USD</li>
-                                    <li>USD</li>
-                                    <li>USD</li>
+                                    ${currencies
+																			.map((curr) => {
+																				return `<li data-curnm='${curr}' id='currlst'>${curr}</li>`;
+																			})
+																			.join('')}
                                 </ul>
                             </div>
                         </div>
-                </div>`;
+                	</div>
+				</div>`;
 	return converter;
 }
+let searchBool = true;
+converterBoard.addEventListener('click', (e) => {
+	if (e.target.id === 'currlst') {
+		(async () => {
+			document.getElementById('inner-conv').remove();
+			dataApi.params.currency = e.target.dataset.curnm.toLowerCase();
+			converterCurrentCurrency.coinInputValue = parseFloat(inputCoin.value);
+			converterCurrentCurrency.currencyInputValue = parseFloat(inputCur.value);
+			const f = new fetchData(dataApi);
+			await f.fetchCurrencyFromCurrencieName();
+			converterBoard.insertAdjacentHTML('afterbegin', addConverter(converterCurrentCurrency));
+			currencyFunc();
+		})();
+	}
+	if (e.target.id === 'coinsearch') {
+		const coinSearch = document.getElementById('coinsearch');
+		coinSearch.addEventListener('keyup', () => {
+			if (searchBool) {
+				setTimeout(() => {
+					(async () => {
+						searchBool = false;
+						searchResult = [];
+						await searchCoin(coinSearch.value);
+						document.querySelector('.coinlist ul').remove();
+						const searchList = `${searchResult
+							.map((coin) => {
+								return `<li data-coinnm='${coin.id}' id='coinlst'>${
+									coin.name.length > 8 ? coin.name.substring(0, 8) + '...' : coin.name
+								}  <span>${coin.symbol.toUpperCase()}</span></li>`;
+							})
+							.join('')}`;
+						const UL = document.createElement('ul');
+						document.querySelector('.coinlist').append(UL);
+						document.querySelector('.coinlist ul').insertAdjacentHTML('beforeend', searchList);
+						searchBool = true;
+					})();
+				}, 500);
+			}
+		});
+	}
+});
+
+converterBoard.addEventListener('click', (e) => {
+	if (e.target.id === 'coinlst') {
+		(async () => {
+			document.getElementById('inner-conv').remove();
+			dataApi.params.ids = e.target.dataset.coinnm.toLowerCase();
+			converterCurrentCurrency.coinInputValue = parseFloat(inputCoin.value);
+			converterCurrentCurrency.currencyInputValue = parseFloat(inputCur.value);
+			const f = new fetchData(dataApi);
+			await f.fetchCurrencyFromCoinName();
+			converterBoard.insertAdjacentHTML('afterbegin', addConverter(converterCurrentCurrency));
+			currencyFunc();
+		})();
+	}
+});

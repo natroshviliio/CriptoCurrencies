@@ -583,14 +583,28 @@ a {
     font-family: 'Poppins', sans-serif;
     font-weight: normal;
     border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
 
 .text-center {
-    text-align: center;
+    float: left;
 }
 
 .item-list ul li:hover {
     background-color: #f8f8f8;
+}
+
+.coinlist ul li span {
+    font-size: 8px;
+    height: 14px;
+    color: var(--darker-yellow);
+    border-radius: 50px;
+    background-color: black;
+    padding: 2px 7px;
+    margin-left: auto;
 }
 
 input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
@@ -615,6 +629,10 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 
     .auth-form-mob {
         display: block;
+    }
+
+    .coinlist ul li {
+        font-size: .7rem;
     }
 }
 
