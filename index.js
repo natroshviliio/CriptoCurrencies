@@ -348,7 +348,7 @@ function addTopCurrencies(name, abr, curUS, pcp_24h, pc_24h, iconUrl, min, max, 
 }
 
 function addConverter(convCurrency) {
-	const {
+	let {
 		coinName,
 		coinSymbol,
 		coinValue,
@@ -359,6 +359,7 @@ function addConverter(convCurrency) {
 		coinInputValue,
 		currencyInputValue,
 	} = convCurrency;
+	coinSymbol = coinSymbol.length > 6 ? coinSymbol.substring(0, 6) + '...' : coinSymbol;
 	const converter = `
 				<div id='inner-conv'>
 					<div class="converter-icon" style="background-image: url('${coinIco}')"></div>
@@ -375,13 +376,14 @@ function addConverter(convCurrency) {
                                 <input id="inputcoin" type="number" value=${coinInputValue}>
                             </div>
                             <div class="item-list coinlist">
-                                <input id='coinsearch' type="text" placeholder="Search coin">
+                                <input autocomplete="off" id='coinsearch' type="text" placeholder="Search coin">
                                 <ul>
                                     ${searchResult
 																			.map((coin) => {
-																				return `<li data-coinnm='${coin.id}' id='coinlst'>${
-																					coin.name.length > 8 ? coin.name.substring(0, 8) + '...' : coin.name
-																				}  <span>${coin.symbol.toUpperCase()}</span></li>`;
+																				let { name, id, symbol } = coin;
+																				shortName = name.length > 8 ? name.substring(0, 8) + '...' : name;
+																				shortSymbol = symbol.length > 6 ? symbol.substring(0, 6) + '...' : symbol;
+																				return `<li title='${name}' data-coinnm='${id}' id='coinlst'>${shortName}  <span>${shortSymbol.toUpperCase()}</span></li>`;
 																			})
 																			.join('')}
                                 </ul>
@@ -432,9 +434,10 @@ converterBoard.addEventListener('click', (e) => {
 						document.querySelector('.coinlist ul').remove();
 						const searchList = `${searchResult
 							.map((coin) => {
-								return `<li data-coinnm='${coin.id}' id='coinlst'>${
-									coin.name.length > 8 ? coin.name.substring(0, 8) + '...' : coin.name
-								}  <span>${coin.symbol.toUpperCase()}</span></li>`;
+								let { name, id, symbol } = coin;
+								shortName = name.length > 8 ? name.substring(0, 8) + '...' : name;
+								shortSymbol = symbol.length > 6 ? symbol.substring(0, 6) + '...' : symbol;
+								return `<li title='${name}' data-coinnm='${id}' id='coinlst'>${shortName}  <span>${shortSymbol.toUpperCase()}</span></li>`;
 							})
 							.join('')}`;
 						const UL = document.createElement('ul');
