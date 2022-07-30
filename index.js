@@ -26,6 +26,9 @@ let converterCurrentCurrency = {
 	coinIco: '',
 	coinInputValue: 0.0,
 	currencyInputValue: 0.0,
+	sparkline: [],
+	sparklineMin: 0,
+	sparklineMax: 0,
 };
 
 let currencies = ['USD', 'AUD', 'EUR', 'CAD'];
@@ -168,6 +171,7 @@ async function searchCoin(name) {
 
 	converterTop10 = topCurrencies;
 	searchResult = converterTop10;
+
 	const temp = converterTop10.filter((d) => d.market_cap_rank === 1)[0];
 
 	converterCurrentCurrency = {
@@ -178,6 +182,8 @@ async function searchCoin(name) {
 		currValue: temp.current_price,
 		coinIco: temp.image,
 		sparkline: temp.sparkline_in_7d.price,
+		sparklineMin: Math.min(...temp.sparkline_in_7d.price),
+		sparklineMax: Math.max(...temp.sparkline_in_7d.price),
 	};
 
 	converterBoard.insertAdjacentHTML('afterbegin', addConverter(converterCurrentCurrency));
@@ -186,6 +192,10 @@ async function searchCoin(name) {
 
 let inputCoin;
 let inputCur;
+let convStaticWidth;
+let convStaticHeight;
+let convStaticWidthPoint;
+let convStaticHeightPoint;
 
 function currencyFunc() {
 	inputCoin = document.getElementById('inputcoin');
@@ -244,6 +254,29 @@ function currencyFunc() {
 	selectCurr.addEventListener('click', () => {
 		currlist.classList.toggle('d-flex');
 	});
+
+	const a = document.querySelector('.converter-footer svg');
+	const b = document.getElementById('conv-stat');
+	let sparklineArr = converterCurrentCurrency.sparkline;
+	convStaticWidth = parseFloat(window.getComputedStyle(a).getPropertyValue('width'));
+	convStaticHeight = parseFloat(window.getComputedStyle(a).getPropertyValue('height'));
+	convStaticHeightPoint = convStaticHeight / converterCurrentCurrency.sparklineMax;
+	convStaticWidthPoint = convStaticWidth / sparklineArr.length;
+	let CSWPIncreement = 0;
+	const convHeightMinPoint =
+		convStaticHeight / (convStaticHeight - converterCurrentCurrency.sparklineMin * convStaticHeightPoint);
+
+	let points = ``;
+
+	for (let i = 0; i < sparklineArr.length; i++) {
+		const spY = (convStaticHeight - sparklineArr[i] * convStaticHeightPoint) * convHeightMinPoint;
+		points += `${CSWPIncreement},${spY} `;
+		if (i === sparklineArr.length - 1) points += `${convStaticWidth},${spY}`;
+		CSWPIncreement += convStaticWidthPoint;
+	}
+
+	console.log(convHeightMinPoint);
+	b.setAttribute('points', points);
 }
 
 const loginButton = document.getElementById('logn');
