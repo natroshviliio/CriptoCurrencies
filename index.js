@@ -278,8 +278,6 @@ function currencyFunc() {
 		if (i === sparklineArr.length - 1) points += `${convStaticWidth},${spY}`;
 		CSWPIncreement += convStaticWidthPoint;
 	}
-
-	console.log(convHeightMinPoint);
 	b.setAttribute('points', points);
 }
 
@@ -396,7 +394,7 @@ function addConverter(convCurrency) {
 		coinInputValue,
 		currencyInputValue,
 	} = convCurrency;
-	coinSymbol = coinSymbol.length > 6 ? coinSymbol.substring(0, 6) + '...' : coinSymbol;
+	coinSymbol = coinSymbol.length > 5 ? coinSymbol.substring(0, 5) + '..' : coinSymbol;
 	const converter = `
 				<div id='inner-conv'>
 					<div class="converter-icon" style="background-image: url('${coinIco}')"></div>
@@ -442,14 +440,27 @@ function addConverter(convCurrency) {
                             </div>
                         </div>
                 	</div>
+					<div class="converter-footer">
+                    	<div class="converter-statistic">
+                        	<svg>
+                            	<polyline id="conv-stat" style="fill:none;stroke:white;stroke-width:1" />
+                        	</svg>
+							<div class="spk-grids">
+								${[...new Array(28)]
+									.map((_, i) => {
+										return (i + 1) % 7 !== 0
+											? i + 1 < 22
+												? `<div class="grid-item grid-right grid-bottom"></div>`
+												: `<div class="grid-item grid-right"></div>`
+											: i + 1 !== 28
+											? `<div class="grid-item grid-bottom"></div>`
+											: `<div class="grid-item"></div>`;
+									})
+									.join('')}
+							</div>
+                    	</div>
+                	</div>
 				</div>
-				<div class="converter-footer">
-                    <div class="converter-statistic">
-                        <svg>
-                            <polyline id="conv-stat" style="fill:none;stroke:white;stroke-width:1" />
-                        </svg>
-                    </div>
-                </div>
 				`;
 	return converter;
 }
@@ -458,7 +469,6 @@ converterBoard.addEventListener('click', (e) => {
 	if (e.target.id === 'currlst') {
 		(async () => {
 			document.getElementById('inner-conv').remove();
-			document.querySelector('.converter-footer').remove();
 			dataApi.params.currency = e.target.dataset.curnm.toLowerCase();
 			converterCurrentCurrency.coinInputValue = parseFloat(inputCoin.value);
 			converterCurrentCurrency.currencyInputValue = parseFloat(inputCur.value);
@@ -501,7 +511,6 @@ converterBoard.addEventListener('click', (e) => {
 	if (e.target.id === 'coinlst') {
 		(async () => {
 			document.getElementById('inner-conv').remove();
-			document.querySelector('.converter-footer').remove();
 			dataApi.params.ids = e.target.dataset.coinnm.toLowerCase();
 			converterCurrentCurrency.coinInputValue = parseFloat(inputCoin.value);
 			converterCurrentCurrency.currencyInputValue = parseFloat(inputCur.value);
