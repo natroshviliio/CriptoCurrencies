@@ -91,6 +91,8 @@ class fetchData {
 			sparkline: temp.sparkline_in_7d.price,
 			coinInputValue: converterCurrentCurrency.coinInputValue,
 			currencyInputValue: converterCurrentCurrency.coinInputValue * temp.current_price,
+			sparklineMin: Math.min(...temp.sparkline_in_7d.price),
+			sparklineMax: Math.max(...temp.sparkline_in_7d.price),
 		};
 	}
 
@@ -118,6 +120,8 @@ class fetchData {
 			sparkline: temp.sparkline_in_7d.price,
 			coinInputValue: converterCurrentCurrency.coinInputValue,
 			currencyInputValue: converterCurrentCurrency.coinInputValue * temp.current_price,
+			sparklineMin: Math.min(...temp.sparkline_in_7d.price),
+			sparklineMax: Math.max(...temp.sparkline_in_7d.price),
 		};
 	}
 }
@@ -438,7 +442,15 @@ function addConverter(convCurrency) {
                             </div>
                         </div>
                 	</div>
-				</div>`;
+				</div>
+				<div class="converter-footer">
+                    <div class="converter-statistic">
+                        <svg>
+                            <polyline id="conv-stat" style="fill:none;stroke:white;stroke-width:1" />
+                        </svg>
+                    </div>
+                </div>
+				`;
 	return converter;
 }
 let searchBool = true;
@@ -446,6 +458,7 @@ converterBoard.addEventListener('click', (e) => {
 	if (e.target.id === 'currlst') {
 		(async () => {
 			document.getElementById('inner-conv').remove();
+			document.querySelector('.converter-footer').remove();
 			dataApi.params.currency = e.target.dataset.curnm.toLowerCase();
 			converterCurrentCurrency.coinInputValue = parseFloat(inputCoin.value);
 			converterCurrentCurrency.currencyInputValue = parseFloat(inputCur.value);
@@ -488,6 +501,7 @@ converterBoard.addEventListener('click', (e) => {
 	if (e.target.id === 'coinlst') {
 		(async () => {
 			document.getElementById('inner-conv').remove();
+			document.querySelector('.converter-footer').remove();
 			dataApi.params.ids = e.target.dataset.coinnm.toLowerCase();
 			converterCurrentCurrency.coinInputValue = parseFloat(inputCoin.value);
 			converterCurrentCurrency.currencyInputValue = parseFloat(inputCur.value);
