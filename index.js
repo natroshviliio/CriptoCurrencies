@@ -400,13 +400,12 @@ function addConverter(convCurrency) {
 	const fourValue =
 		sparkline.length !== 0
 			? [
-					cSparkline[0],
+					cSparkline[cSparkline.length - 1],
 					cSparkline[Math.trunc(cSparkline.length * (3 / 4))],
 					cSparkline[Math.trunc(cSparkline.length * (2 / 4))],
-					cSparkline[cSparkline.length - 1],
+					cSparkline[0],
 			  ]
 			: [];
-	console.log(sparkline.length);
 	const converter = `
 				<div id='inner-conv'>
 					<div class="converter-icon" style="background-image: url('${coinIco}')"></div>
@@ -477,7 +476,6 @@ function addConverter(convCurrency) {
 									? fourValue
 											.map((inf) => {
 												a += 20;
-												console.log(a);
 												return `<div class="spk-inf pos-right c-red spk-st" style="top: ${a}px">${inf}</div>`;
 											})
 											.join('')
