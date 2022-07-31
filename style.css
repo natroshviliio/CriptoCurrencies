@@ -703,6 +703,10 @@ input[type=number] {
     right: 0;
 }
 
+.spk-st:hover {
+    font-size: .8rem;
+}
+
 .converter-statistic:hover .spk-inf {
     opacity: 1;
 }

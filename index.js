@@ -401,11 +401,11 @@ function addConverter(convCurrency) {
 		sparkline.length !== 0
 			? [
 					cSparkline[0],
-					cSparkline[cSparkline.length * (3 / 4)],
-					cSparkline[cSparkline.length * (2 / 4)],
+					cSparkline[Math.trunc(cSparkline.length * (3 / 4))],
+					cSparkline[Math.trunc(cSparkline.length * (2 / 4))],
 					cSparkline[cSparkline.length - 1],
 			  ]
-			: 'yle';
+			: [];
 	console.log(sparkline.length);
 	const converter = `
 				<div id='inner-conv'>
@@ -471,10 +471,18 @@ function addConverter(convCurrency) {
 									.join('')}
 							</div>
 							<div class="spk-inf pos-left bg-black">7 days</div>
-							<div class="spk-inf pos-right c-red">${fourValue[0]}</div>
-							<div class="spk-inf pos-right c-red" style="top:20px">${fourValue[1]}</div>
-							<div class="spk-inf pos-right c-red" style="top:40px">${fourValue[2]}</div>
-							<div class="spk-inf pos-right c-red" style="top:60px">${fourValue[3]}</div>
+							${
+								((a = -20),
+								fourValue.length > 0
+									? fourValue
+											.map((inf) => {
+												a += 20;
+												console.log(a);
+												return `<div class="spk-inf pos-right c-red spk-st" style="top: ${a}px">${inf}</div>`;
+											})
+											.join('')
+									: '<div class="spk-inf pos-right bg-black c-orange">no result</div>')
+							}
                     	</div>
                 	</div>
 				</div>
