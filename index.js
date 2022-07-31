@@ -17,7 +17,7 @@ let dataApi = {
 };
 
 // CONVERTING
-let converterCurrentCurrency = {
+let convCC = {
 	coinName: '',
 	coinSymbol: '',
 	coinValue: 0,
@@ -79,9 +79,9 @@ class fetchData {
 		);
 
 		const data = await response.json();
-		const temp = data.find((x) => x.name === converterCurrentCurrency.coinName);
+		const temp = data.find((x) => x.name === convCC.coinName);
 
-		converterCurrentCurrency = {
+		convCC = {
 			coinName: temp.name,
 			coinSymbol: temp.symbol.toUpperCase(),
 			coinValue: 1 / temp.current_price,
@@ -89,8 +89,8 @@ class fetchData {
 			currValue: temp.current_price,
 			coinIco: temp.image,
 			sparkline: temp.sparkline_in_7d.price,
-			coinInputValue: converterCurrentCurrency.coinInputValue,
-			currencyInputValue: converterCurrentCurrency.coinInputValue * temp.current_price,
+			coinInputValue: convCC.coinInputValue,
+			currencyInputValue: convCC.coinInputValue * temp.current_price,
 			sparklineMin: Math.min(...temp.sparkline_in_7d.price),
 			sparklineMax: Math.max(...temp.sparkline_in_7d.price),
 		};
@@ -110,7 +110,7 @@ class fetchData {
 		const data = await response.json();
 		const temp = data.find((x) => x.id === this.dataApi.params.ids);
 
-		converterCurrentCurrency = {
+		convCC = {
 			coinName: temp.name,
 			coinSymbol: temp.symbol.toUpperCase(),
 			coinValue: 1 / temp.current_price,
@@ -118,8 +118,8 @@ class fetchData {
 			currValue: temp.current_price,
 			coinIco: temp.image,
 			sparkline: temp.sparkline_in_7d.price,
-			coinInputValue: converterCurrentCurrency.coinInputValue,
-			currencyInputValue: converterCurrentCurrency.coinInputValue * temp.current_price,
+			coinInputValue: convCC.coinInputValue,
+			currencyInputValue: convCC.coinInputValue * temp.current_price,
 			sparklineMin: Math.min(...temp.sparkline_in_7d.price),
 			sparklineMax: Math.max(...temp.sparkline_in_7d.price),
 		};
@@ -178,7 +178,7 @@ async function searchCoin(name) {
 
 	const temp = converterTop10.filter((d) => d.market_cap_rank === 1)[0];
 
-	converterCurrentCurrency = {
+	convCC = {
 		coinName: temp.name,
 		coinSymbol: temp.symbol.toUpperCase(),
 		coinValue: 1 / temp.current_price,
@@ -190,7 +190,7 @@ async function searchCoin(name) {
 		sparklineMax: Math.max(...temp.sparkline_in_7d.price),
 	};
 
-	converterBoard.insertAdjacentHTML('afterbegin', addConverter(converterCurrentCurrency));
+	converterBoard.insertAdjacentHTML('afterbegin', addConverter(convCC));
 	currencyFunc();
 })();
 
@@ -229,7 +229,7 @@ function currencyFunc() {
 		// inputCoin.value = inputCoinValue;
 		//#endregion
 
-		inputCur.value = (inputCoin.value * converterCurrentCurrency.currValue).toFixed(3);
+		inputCur.value = (inputCoin.value * convCC.currValue).toFixed(3);
 	});
 
 	inputCur.addEventListener('keyup', (e) => {
@@ -243,7 +243,7 @@ function currencyFunc() {
 		// inputCur.value = inputCurValue;
 		//#endregion
 
-		inputCoin.value = (inputCur.value * converterCurrentCurrency.coinValue).toFixed(8);
+		inputCoin.value = (inputCur.value * convCC.coinValue).toFixed(8);
 	});
 
 	const selectCoin = document.getElementById('select-coin');
@@ -261,14 +261,13 @@ function currencyFunc() {
 
 	const a = document.querySelector('.converter-footer svg');
 	const b = document.getElementById('conv-stat');
-	let sparklineArr = converterCurrentCurrency.sparkline;
+	let sparklineArr = convCC.sparkline;
 	convStaticWidth = parseFloat(window.getComputedStyle(a).getPropertyValue('width'));
 	convStaticHeight = parseFloat(window.getComputedStyle(a).getPropertyValue('height'));
-	convStaticHeightPoint = convStaticHeight / converterCurrentCurrency.sparklineMax;
+	convStaticHeightPoint = convStaticHeight / convCC.sparklineMax;
 	convStaticWidthPoint = convStaticWidth / sparklineArr.length;
 	let CSWPIncreement = 0;
-	const convHeightMinPoint =
-		convStaticHeight / (convStaticHeight - converterCurrentCurrency.sparklineMin * convStaticHeightPoint);
+	const convHeightMinPoint = convStaticHeight / (convStaticHeight - convCC.sparklineMin * convStaticHeightPoint);
 
 	let points = ``;
 
@@ -331,15 +330,17 @@ function addTopCurrencies(name, abr, curUS, pcp_24h, pc_24h, iconUrl, min, max, 
 	let priceChangeP = pcp_24h > 0 ? `+${pcp_24h}` : pcp_24h;
 	let priceChange = pc_24h > 0 ? `+${pc_24h}` : pc_24h;
 	let currentColor;
+	//Percent Change
 	if (pcp_24h > 0) {
 		priceChangeP = `+${pcp_24h}%`;
 		currentColor = 'progress';
 	} else if (pcp_24h < 0) {
-		priceChangeP = `${pcp_24h}$`;
+		priceChangeP = `${pcp_24h}%`;
 		currentColor = 'degress';
 	} else {
 		priceChangeP = ``;
 	}
+	//Price Change
 	if (pc_24h > 0) {
 		priceChange = `+${pc_24h}$`;
 		currentColor = 'progress';
@@ -395,6 +396,17 @@ function addConverter(convCurrency) {
 		currencyInputValue,
 	} = convCurrency;
 	coinSymbol = coinSymbol.length > 5 ? coinSymbol.substring(0, 5) + '..' : coinSymbol;
+	let cSparkline = Object.create(sparkline).sort();
+	const fourValue =
+		sparkline.length !== 0
+			? [
+					cSparkline[0],
+					cSparkline[cSparkline.length * (3 / 4)],
+					cSparkline[cSparkline.length * (2 / 4)],
+					cSparkline[cSparkline.length - 1],
+			  ]
+			: 'yle';
+	console.log(sparkline.length);
 	const converter = `
 				<div id='inner-conv'>
 					<div class="converter-icon" style="background-image: url('${coinIco}')"></div>
@@ -458,6 +470,11 @@ function addConverter(convCurrency) {
 									})
 									.join('')}
 							</div>
+							<div class="spk-inf pos-left bg-black">7 days</div>
+							<div class="spk-inf pos-right c-red">${fourValue[0]}</div>
+							<div class="spk-inf pos-right c-red" style="top:20px">${fourValue[1]}</div>
+							<div class="spk-inf pos-right c-red" style="top:40px">${fourValue[2]}</div>
+							<div class="spk-inf pos-right c-red" style="top:60px">${fourValue[3]}</div>
                     	</div>
                 	</div>
 				</div>
@@ -470,11 +487,11 @@ converterBoard.addEventListener('click', (e) => {
 		(async () => {
 			document.getElementById('inner-conv').remove();
 			dataApi.params.currency = e.target.dataset.curnm.toLowerCase();
-			converterCurrentCurrency.coinInputValue = parseFloat(inputCoin.value);
-			converterCurrentCurrency.currencyInputValue = parseFloat(inputCur.value);
+			convCC.coinInputValue = parseFloat(inputCoin.value);
+			convCC.currencyInputValue = parseFloat(inputCur.value);
 			const f = new fetchData(dataApi);
 			await f.fetchCurrencyFromCurrencieName();
-			converterBoard.insertAdjacentHTML('afterbegin', addConverter(converterCurrentCurrency));
+			converterBoard.insertAdjacentHTML('afterbegin', addConverter(convCC));
 			currencyFunc();
 		})();
 	}
@@ -512,11 +529,11 @@ converterBoard.addEventListener('click', (e) => {
 		(async () => {
 			document.getElementById('inner-conv').remove();
 			dataApi.params.ids = e.target.dataset.coinnm.toLowerCase();
-			converterCurrentCurrency.coinInputValue = parseFloat(inputCoin.value);
-			converterCurrentCurrency.currencyInputValue = parseFloat(inputCur.value);
+			convCC.coinInputValue = parseFloat(inputCoin.value);
+			convCC.currencyInputValue = parseFloat(inputCur.value);
 			const f = new fetchData(dataApi);
 			await f.fetchCurrencyFromCoinName();
-			converterBoard.insertAdjacentHTML('afterbegin', addConverter(converterCurrentCurrency));
+			converterBoard.insertAdjacentHTML('afterbegin', addConverter(convCC));
 			currencyFunc();
 		})();
 	}
