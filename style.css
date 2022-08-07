@@ -224,9 +224,10 @@ a {
 }
 
 .squared {
-    width: 1000px;
+    width: 100%;
     padding: 2px 20px;
     background-color: var(--darkerwhite);
+    color: #444;
 }
 
 .top-currencies {
@@ -764,6 +765,7 @@ input[type=number] {
 
 .coin-table table {
     width: 100%;
+    min-width: 700px;
     margin-top: 20px;
     /* border: 1px solid black; */
 }
@@ -775,9 +777,8 @@ input[type=number] {
 }
 
 .coin-table table tr th {
-    padding: 4px;
     text-align: start;
-    padding: 14px 4px;
+    padding: 14px 7px;
     border-bottom: 1px solid rgb(97, 97, 97);
     background-color: #505050;
     color: rgb(241, 241, 241);
@@ -787,7 +788,7 @@ input[type=number] {
 }
 
 .coin-table table tr td {
-    padding: 17px 4px;
+    padding: 22px 7px;
     border-bottom: 1px solid rgb(151, 151, 151);
 }
 
