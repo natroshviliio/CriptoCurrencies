@@ -124,6 +124,8 @@ class fetchData {
 			sparklineMax: Math.max(...temp.sparkline_in_7d.price),
 		};
 	}
+
+	async fetchFromPage() {}
 }
 
 async function searchCoin(name) {
@@ -142,7 +144,13 @@ async function searchCoin(name) {
 	}
 }
 
-console.log(searchCoin(''), searchResult);
+async function countPages() {
+	let response = await fetch('https://api.coingecko.com/api/v3/coins/list');
+	const pages = await response.json();
+	return pages.length;
+}
+
+const pages = (async () => await countPages())();
 
 (async () => {
 	const f = new fetchData(dataApi);
@@ -159,6 +167,7 @@ console.log(searchCoin(''), searchResult);
 			price_change_24h,
 			market_cap_rank,
 		} = d;
+
 		currencyBoard.insertAdjacentHTML(
 			'beforeend',
 			addTopCurrencies(

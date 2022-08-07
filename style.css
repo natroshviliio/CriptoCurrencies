@@ -757,16 +757,44 @@ input[type=number] {
     width: 100%;
 }
 
+.coinlist-pager {
+    width: 340px;
+    height: 30px;
+    margin-top: 15px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.coinlist-pager ul {
+    display: grid;
+    height: 30px;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 5px;
+}
+
+.coinlist-pager ul li {
+    list-style-type: none;
+    font-family: 'Nanum Gothic', sans-serif;
+    background-color: rgb(185, 185, 185);
+    border-radius: 3px;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
 .coin-table {
     width: 100%;
     height: 800px;
+    margin-top: 20px;
     overflow: scroll;
+    background-color: rgb(216, 216, 216);
 }
 
 .coin-table table {
     width: 100%;
     min-width: 700px;
-    margin-top: 20px;
     /* border: 1px solid black; */
 }
 
@@ -875,5 +903,9 @@ input[type=number] {
 
     .squared {
         font-size: .8rem;
+    }
+
+    .coinlist-pager {
+        width: 100%;
     }
 }
