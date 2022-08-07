@@ -142,6 +142,8 @@ async function searchCoin(name) {
 	}
 }
 
+console.log(searchCoin(''), searchResult);
+
 (async () => {
 	const f = new fetchData(dataApi);
 	await f.fetchTopCurrencies();
@@ -196,10 +198,6 @@ async function searchCoin(name) {
 
 let inputCoin;
 let inputCur;
-let convStaticWidth;
-let convStaticHeight;
-let convStaticWidthPoint;
-let convStaticHeightPoint;
 
 function currencyFunc() {
 	inputCoin = document.getElementById('inputcoin');
@@ -261,23 +259,27 @@ function currencyFunc() {
 
 	const a = document.querySelector('.converter-footer svg');
 	const b = document.getElementById('conv-stat');
-	let sparklineArr = convCC.sparkline;
 	convStaticWidth = parseFloat(window.getComputedStyle(a).getPropertyValue('width'));
 	convStaticHeight = parseFloat(window.getComputedStyle(a).getPropertyValue('height'));
-	convStaticHeightPoint = convStaticHeight / convCC.sparklineMax;
-	convStaticWidthPoint = convStaticWidth / sparklineArr.length;
+
+	b.setAttribute('points', linearChart(convStaticWidth, convStaticHeight, convCC.sparkline));
+}
+
+function linearChart(convStaticWidth, convStaticHeight, sparklineArr) {
+	const convStaticHeightPoint = convStaticHeight / convCC.sparklineMax;
+	const convStaticWidthPoint = convStaticWidth / sparklineArr.length;
 	let CSWPIncreement = 0;
 	const convHeightMinPoint = convStaticHeight / (convStaticHeight - convCC.sparklineMin * convStaticHeightPoint);
 
 	let points = ``;
-
 	for (let i = 0; i < sparklineArr.length; i++) {
 		const spY = (convStaticHeight - sparklineArr[i] * convStaticHeightPoint) * convHeightMinPoint;
 		points += `${CSWPIncreement},${spY} `;
 		if (i === sparklineArr.length - 1) points += `${convStaticWidth},${spY}`;
 		CSWPIncreement += convStaticWidthPoint;
 	}
-	b.setAttribute('points', points);
+
+	return points;
 }
 
 const loginButton = document.getElementById('logn');
@@ -454,7 +456,7 @@ function addConverter(convCurrency) {
 					<div class="converter-footer">
                     	<div class="converter-statistic">
                         	<svg>
-                            	<polyline id="conv-stat" style="fill:none;stroke:white;stroke-width:1" />
+                            	<polyline id="conv-stat" style="fill:none;stroke:white;stroke-width:0.8" />
                         	</svg>
 							<div class="spk-grids">
 								${[...new Array(28)]
@@ -476,7 +478,7 @@ function addConverter(convCurrency) {
 									? fourValue
 											.map((inf) => {
 												a += 20;
-												return `<div class="spk-inf pos-right c-red spk-st" style="top: ${a}px">${inf}</div>`;
+												return `<div class="spk-inf pos-right c-yellow spk-st" style="top: ${a}px">${inf}</div>`;
 											})
 											.join('')
 									: '<div class="spk-inf pos-right bg-black c-orange">no result</div>')
