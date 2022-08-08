@@ -49,6 +49,14 @@
     background-color: var(--darkerwhite) !important;
 }
 
+.c-progress {
+    color: var(--light-green) !important;
+}
+
+.c-degress {
+    color: var(--light-red) !important;
+}
+
 .c-orange {
     color: orange !important;
 }
@@ -242,7 +250,7 @@ a {
     padding: 15px 25px;
     border-radius: 15px;
     display: grid;
-    grid-template-columns: repeat(10, minmax(280px, 1fr));
+    grid-template-columns: repeat(7, minmax(280px, 1fr));
     gap: 25px;
     overflow-x: scroll;
     overflow-y: hidden;
@@ -430,17 +438,13 @@ a {
     letter-spacing: 1px;
 }
 
-.progress {
-    color: var(--light-green) !important;
-}
+
 
 .zero {
     color: var(--light-torquoise) !important;
 }
 
-.degress {
-    color: var(--light-red) !important;
-}
+
 
 .topcur-foot {
     width: 100%;
@@ -477,6 +481,7 @@ a {
     bottom: 10px;
     border-radius: 5px;
     background-color: #efefef;
+    border: 2px solid white;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -786,7 +791,7 @@ input[type=number] {
 
 .coin-table {
     width: 100%;
-    height: 800px;
+    max-height: 800px;
     margin-top: 20px;
     overflow: scroll;
     background-color: rgb(216, 216, 216);

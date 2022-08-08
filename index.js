@@ -2,7 +2,7 @@ let dataApi = {
 	params: {
 		url: 'https://api.coingecko.com/api/v3/coins/markets',
 		currency: 'usd',
-		page: 1,
+		page: '',
 		ids: '',
 	},
 	get: function (
@@ -35,8 +35,11 @@ let currencies = ['USD', 'AUD', 'EUR', 'CAD'];
 let converterSearchCur = [];
 let converterTop10 = [];
 let searchResult = [];
+
 // OTHER
-let topCurrencies = [];
+let trendingCurrencies = [];
+let trendingCoins = [];
+let marketData = [];
 
 const currencyBoard = document.querySelector('.currency-board');
 const converterBoard = document.querySelector('.converter-board');
@@ -44,10 +47,24 @@ const cb = document.getElementById('cb');
 const prevBtn = document.querySelector('.prev');
 const nextBtn = document.querySelector('.next');
 
+const allCoins = document.querySelector('.all-coins');
+
 //DATA FETCH
 class fetchData {
 	constructor(dataApi) {
 		this.dataApi = dataApi;
+	}
+
+	async fetchMarketData(length, arr) {
+		let response;
+		let data;
+		for (let i = 1; i < length; i++) {
+			response = await fetch(
+				`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&page${i}&per_page=250`,
+			);
+			data = await response.json();
+			arr.push(...data);
+		}
 	}
 
 	async fetchTopCurrencies() {
@@ -63,7 +80,7 @@ class fetchData {
 
 		let data = await response.json();
 		for (let d of data) {
-			d.market_cap_rank <= 10 ? topCurrencies.push(d) : '';
+			d.market_cap_rank <= 10 ? converterTop10.push(d) : '';
 		}
 	}
 
@@ -125,6 +142,25 @@ class fetchData {
 		};
 	}
 
+	async fetchWithTrending() {
+		trendingCurrencies = [];
+		let response = await fetch('https://api.coingecko.com/api/v3/search/trending');
+		let data = await response.json();
+		async function getTrending(length, idIndex, i) {
+			if (length > 0) {
+				const temp = idIndex[i].item.id;
+				const response2 = await fetch(
+					`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${temp}`,
+				);
+				const data2 = await response2.json();
+				trendingCurrencies.push(...data2);
+				i = i + 1;
+				return await getTrending(length - 1, idIndex, i);
+			}
+		}
+		await getTrending(data.coins.length, data.coins, 0);
+	}
+
 	async fetchFromPage() {}
 }
 
@@ -155,7 +191,9 @@ const pages = (async () => await countPages())();
 (async () => {
 	const f = new fetchData(dataApi);
 	await f.fetchTopCurrencies();
-	topCurrencies.map((d) => {
+	await f.fetchWithTrending();
+
+	trendingCurrencies.map((d, i) => {
 		const {
 			name,
 			symbol,
@@ -170,7 +208,7 @@ const pages = (async () => await countPages())();
 
 		currencyBoard.insertAdjacentHTML(
 			'beforeend',
-			addTopCurrencies(
+			addTrendingCurrencies(
 				name,
 				symbol,
 				current_price,
@@ -179,12 +217,11 @@ const pages = (async () => await countPages())();
 				image,
 				low_24h,
 				high_24h,
-				market_cap_rank,
+				i + 1,
 			),
 		);
 	});
 
-	converterTop10 = topCurrencies;
 	searchResult = converterTop10;
 
 	const temp = converterTop10.filter((d) => d.market_cap_rank === 1)[0];
@@ -203,6 +240,8 @@ const pages = (async () => await countPages())();
 
 	converterBoard.insertAdjacentHTML('afterbegin', addConverter(convCC));
 	currencyFunc();
+
+	allCoins.insertAdjacentHTML('beforeend', createTable());
 })();
 
 let inputCoin;
@@ -337,27 +376,27 @@ cb.addEventListener('mousemove', (e) => {
 });
 
 //JSX
-function addTopCurrencies(name, abr, curUS, pcp_24h, pc_24h, iconUrl, min, max, count) {
+function addTrendingCurrencies(name, abr, curUS, pcp_24h, pc_24h, iconUrl, min, max, count) {
 	let priceChangeP = pcp_24h > 0 ? `+${pcp_24h}` : pcp_24h;
 	let priceChange = pc_24h > 0 ? `+${pc_24h}` : pc_24h;
 	let currentColor;
 	//Percent Change
 	if (pcp_24h > 0) {
 		priceChangeP = `+${pcp_24h}%`;
-		currentColor = 'progress';
+		currentColor = 'c-progress';
 	} else if (pcp_24h < 0) {
 		priceChangeP = `${pcp_24h}%`;
-		currentColor = 'degress';
+		currentColor = 'c-degress';
 	} else {
 		priceChangeP = ``;
 	}
 	//Price Change
 	if (pc_24h > 0) {
 		priceChange = `+${pc_24h}$`;
-		currentColor = 'progress';
+		currentColor = 'c-progress';
 	} else if (pc_24h < 0) {
 		priceChange = `${pc_24h}$`;
-		currentColor = `degress`;
+		currentColor = `c-degress`;
 	} else {
 		priceChange = ``;
 	}
@@ -555,3 +594,46 @@ converterBoard.addEventListener('click', (e) => {
 		})();
 	}
 });
+
+function createTable() {
+	let coinsTable = `
+		<div class="coin-table">
+            <table>
+                <tr>
+                    <th>#</th>
+                    <th>Coin</th>
+                    <th>Price</th>
+                    <th>1h</th>
+                    <th>24h</th>
+                    <th>7d</th>
+                    <th>24h Volume</th>
+                    <th>Last 7 Days</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Bitcoin</td>
+                    <td>23,581</td>
+                    <td>-0.3%</td>
+                    <td>-0.6%</td>
+                    <td>-2.5%</td>
+                    <td>$14,177,926,270</td>
+                    <td>ioane</td>
+                </tr>
+            </table>
+        </div>
+		<div class="coinlist-pager">
+            <ul>
+                <li>&#x3c;</li>
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+                <li>4</li>
+                <li>5</li>
+                <li>...</li>
+                <li>131</li>
+                <li>&#x3e;</li>
+            </ul>
+        </div>
+	`;
+	return coinsTable;
+}
