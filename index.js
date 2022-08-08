@@ -47,7 +47,7 @@ const cb = document.getElementById('cb');
 const prevBtn = document.querySelector('.prev');
 const nextBtn = document.querySelector('.next');
 
-const allCoins = document.querySelector('.all-coins');
+const coinListPager = document.querySelector('.coinlist-pager');
 
 //DATA FETCH
 class fetchData {
@@ -241,7 +241,7 @@ const pages = (async () => await countPages())();
 	converterBoard.insertAdjacentHTML('afterbegin', addConverter(convCC));
 	currencyFunc();
 
-	allCoins.insertAdjacentHTML('beforeend', createTable());
+	coinListPager.insertAdjacentHTML('beforebegin', createTable());
 })();
 
 let inputCoin;
@@ -621,19 +621,7 @@ function createTable() {
                 </tr>
             </table>
         </div>
-		<div class="coinlist-pager">
-            <ul>
-                <li>&#x3c;</li>
-                <li>1</li>
-                <li>2</li>
-                <li>3</li>
-                <li>4</li>
-                <li>5</li>
-                <li>...</li>
-                <li>131</li>
-                <li>&#x3e;</li>
-            </ul>
-        </div>
+		
 	`;
 	return coinsTable;
 }
