@@ -543,7 +543,7 @@ a {
     border-radius: 5px;
     box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3);
     background-color: #eee;
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 .converter-header h3::-webkit-scrollbar {

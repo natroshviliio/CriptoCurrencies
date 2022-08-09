@@ -41,6 +41,18 @@ let trendingCurrencies = [];
 let trendingCoins = [];
 let marketData = [];
 
+//TABLE LIST
+let tableList = {
+	marketCapRank: 0,
+	coinName: '',
+	priceToUsd: 0,
+	change1h: 0,
+	change24h: 0,
+	change7d: 0,
+	chaneg24hVolume: 0,
+	last7Days: 0,
+};
+
 const currencyBoard = document.querySelector('.currency-board');
 const converterBoard = document.querySelector('.converter-board');
 const cb = document.getElementById('cb');
@@ -67,6 +79,25 @@ class fetchData {
 		}
 	}
 
+	async fetchWithTrending() {
+		trendingCurrencies = [];
+		let response = await fetch('https://api.coingecko.com/api/v3/search/trending');
+		let data = await response.json();
+		async function getTrending(length, idIndex, i) {
+			if (length > 0) {
+				const temp = idIndex[i].item.id;
+				const response2 = await fetch(
+					`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${temp}`,
+				);
+				const data2 = await response2.json();
+				trendingCurrencies.push(...data2);
+				i = i + 1;
+				return await getTrending(length - 1, idIndex, i);
+			}
+		}
+		await getTrending(data.coins.length, data.coins, 0);
+	}
+
 	async fetchTopCurrencies() {
 		let response = await fetch(
 			this.dataApi.get(
@@ -80,11 +111,13 @@ class fetchData {
 
 		let data = await response.json();
 		for (let d of data) {
-			d.market_cap_rank <= 10 ? converterTop10.push(d) : '';
+			if (d.market_cap_rank <= 10) {
+				converterTop10.push(d);
+			}
 		}
 	}
 
-	async fetchCurrencyFromCurrencieName() {
+	async fetchCurrencyFromCurrencyName() {
 		let response = await fetch(
 			this.dataApi.get(
 				dataApi.params.url,
@@ -142,25 +175,6 @@ class fetchData {
 		};
 	}
 
-	async fetchWithTrending() {
-		trendingCurrencies = [];
-		let response = await fetch('https://api.coingecko.com/api/v3/search/trending');
-		let data = await response.json();
-		async function getTrending(length, idIndex, i) {
-			if (length > 0) {
-				const temp = idIndex[i].item.id;
-				const response2 = await fetch(
-					`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${temp}`,
-				);
-				const data2 = await response2.json();
-				trendingCurrencies.push(...data2);
-				i = i + 1;
-				return await getTrending(length - 1, idIndex, i);
-			}
-		}
-		await getTrending(data.coins.length, data.coins, 0);
-	}
-
 	async fetchFromPage() {}
 }
 
@@ -211,7 +225,7 @@ const pages = (async () => await countPages())();
 			addTrendingCurrencies(
 				name,
 				symbol,
-				current_price,
+				current_price.toString().includes('e') ? current_price.toFixed(10) : current_price,
 				price_change_percentage_24h.toFixed(3) == 0 ? 0 : price_change_percentage_24h.toFixed(3),
 				price_change_24h.toFixed(3) == 0 ? 0 : price_change_24h.toFixed(3),
 				image,
@@ -275,7 +289,7 @@ function currencyFunc() {
 		// inputCoin.value = inputCoinValue;
 		//#endregion
 
-		inputCur.value = (inputCoin.value * convCC.currValue).toFixed(3);
+		inputCur.value = (inputCoin.value * convCC.currValue).toFixed(8);
 	});
 
 	inputCur.addEventListener('keyup', (e) => {
@@ -446,6 +460,8 @@ function addConverter(convCurrency) {
 		currencyInputValue,
 	} = convCurrency;
 	coinSymbol = coinSymbol.length > 5 ? coinSymbol.substring(0, 5) + '..' : coinSymbol;
+
+	coinValue = parseFloat(coinValue);
 	let cSparkline = Object.create(sparkline).sort();
 	const fourValue =
 		sparkline.length !== 0
@@ -546,7 +562,7 @@ converterBoard.addEventListener('click', (e) => {
 			convCC.coinInputValue = parseFloat(inputCoin.value);
 			convCC.currencyInputValue = parseFloat(inputCur.value);
 			const f = new fetchData(dataApi);
-			await f.fetchCurrencyFromCurrencieName();
+			await f.fetchCurrencyFromCurrencyName();
 			converterBoard.insertAdjacentHTML('afterbegin', addConverter(convCC));
 			currencyFunc();
 		})();
