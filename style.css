@@ -538,12 +538,12 @@ a {
 }
 
 .converter-header h3 {
-    color: rgb(58, 58, 58);
-    padding: 5px 10px;
-    border-radius: 5px;
-    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3);
-    background-color: #eee;
-    font-size: 1rem;
+    color: #eee;
+    padding: 5px 0px;
+    /* border-radius: 5px; */
+    font-family: 'Poppins', sans-serif;
+    border-bottom: 1px solid var(--gray);
+    font-size: .93rem;
 }
 
 .converter-header h3::-webkit-scrollbar {

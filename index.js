@@ -461,7 +461,8 @@ function addConverter(convCurrency) {
 	} = convCurrency;
 	coinSymbol = coinSymbol.length > 5 ? coinSymbol.substring(0, 5) + '..' : coinSymbol;
 
-	coinValue = parseFloat(coinValue);
+	coinValue = coinValue.toString().includes('e') ? coinValue.toFixed(10) : coinValue;
+	currValue = currValue.toString().includes('e') ? currValue.toFixed(10) : currValue;
 	let cSparkline = Object.create(sparkline).sort();
 	const fourValue =
 		sparkline.length !== 0
@@ -479,7 +480,7 @@ function addConverter(convCurrency) {
                         <h3>1 ${coinSymbol} = ${currValue} ${currSymbol}</h3>
                     </div>
                     <div class="converter-header">
-                        <h3>1 ${currSymbol} = ${coinValue.toFixed(6)} ${coinSymbol}</h3>
+                        <h3>1 ${currSymbol} = ${coinValue} ${coinSymbol}</h3>
                     </div>
                     <div class="converter-body">
                         <div class="group-collection">
